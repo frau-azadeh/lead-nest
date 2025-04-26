@@ -1,13 +1,15 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LeadsPage from './pages/LeadsPage';
 import './App.css';
 
 function App() {
   return (
-    <>
-      <div></div>
-      <h1 className="text-red-500">سلام</h1>
-      <div className="card"></div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/leads" replace />} />
+        <Route path="/leads" element={<LeadsPage />} />
+      </Routes>
+    </Router>
   );
 }
 
