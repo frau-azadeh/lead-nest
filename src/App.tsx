@@ -1,15 +1,34 @@
 // src/App.tsx
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LeadsPage from './pages/LeadsPage';
+import AdminDashboard from './pages/AdminDashboard';
+import SalesDashboard from './pages/SalesDashboard';
+import PurchaseDashboard from './pages/PurchaseDashboard';
+import LoginPage from './pages/LoginPage';
 import Navbar from './components/layout/Navbar';
-import { Toaster } from 'react-hot-toast'; // اگه اینجا باشه، Toast همیشه فعاله
+import { Toaster } from 'react-hot-toast';
+import ProtectedRoute from './routes/ProtectedRoute';
+
 import './App.css';
 
 function App() {
   return (
     <Router>
-      {/* Toast ها */}
+      <InnerApp />
+    </Router>
+  );
+}
+
+function InnerApp() {
+  const location = useLocation();
+
+  const hideNavbarPaths = ['/login'];
+
+  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
+
+  return (
+    <>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -21,21 +40,39 @@ function App() {
         }}
       />
 
-      {/* ناوبری ثابت بالای همه صفحات */}
-      <Navbar />
+      {shouldShowNavbar && <Navbar />}
 
-      {/* محتوای صفحه ها */}
       <main className="container mx-auto px-4 py-6">
         <Routes>
           <Route path="/" element={<Navigate to="/leads" replace />} />
-          <Route path="/leads" element={<LeadsPage />} />
-          {/* آینده: صفحه های دیگه اینجا اضافه میشن */}
-          {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
-          {/* <Route path="/profile" element={<ProfilePage />} /> */}
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['admin', 'marketing', 'sales']} />}>
+            <Route path="/leads" element={<LeadsPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['sales']} />}>
+            <Route path="/sales" element={<SalesDashboard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['purchase']} />}>
+            <Route path="/purchase" element={<PurchaseDashboard />} />
+          </Route>
+
+          {/* Unauthorized Page */}
+          <Route path="/unauthorized" element={
+            <div className="text-center py-10 text-red-500">
+              شما اجازه دسترسی به این صفحه را ندارید.
+            </div>
+          } />
         </Routes>
       </main>
-    </Router>
+    </>
   );
 }
 
