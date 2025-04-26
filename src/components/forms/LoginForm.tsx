@@ -33,10 +33,33 @@ export default function LoginForm() {
 
     if (error) {
       toast.error(error.message);
-    } else {
-      await dispatch(fetchUserProfile());
+      return;
+    }
+
+    try {
+      const profile = await dispatch(fetchUserProfile()).unwrap();
       toast.success('ورود موفقیت‌آمیز بود!');
-      navigate('/leads');
+
+      // بر اساس نقش هدایت می‌کنیم
+      switch (profile.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'marketing':
+          navigate('/leads');
+          break;
+        case 'sales':
+          navigate('/sales');
+          break;
+        case 'purchase':
+          navigate('/purchase');
+          break;
+        default:
+          navigate('/unauthorized');
+          break;
+      }
+    } catch (err) {
+      toast.error('مشکلی در دریافت اطلاعات کاربر پیش آمد.');
     }
   };
 
