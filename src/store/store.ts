@@ -1,7 +1,6 @@
-// src/store/store.ts
-
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import leadsReducer from '../features/leads/leadsSlice';
+import authReducer from '../features/auth/authSlice'; // 👈 اضافه کن
 import {
   persistStore,
   persistReducer,
@@ -14,16 +13,15 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import { combineReducers } from 'redux';
-
 const rootReducer = combineReducers({
   leads: leadsReducer,
+  auth: authReducer, // 👈 اینجا اضافه کن
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['leads'], // فقط leads رو ذخیره میکنیم
+  whitelist: ['leads', 'auth'], // 👈 اینجا هم auth رو اضافه کن
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
