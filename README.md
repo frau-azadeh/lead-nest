@@ -49,10 +49,12 @@ Follow these steps to start working with LeadNest locally:
     npm install
 
   3.  **Create a .env file with your Supabase credentials:**
+
     VITE_SUPABASE_URL=your_supabase_url
     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
   4. **Start the development server**
+  
     npm run dev
 
 ## ✨ Future Roadmap
