@@ -1,20 +1,15 @@
 import { PurchaseOrder } from '../../types/purchaseOrder';
-import  Button  from '../ui/Button';
+import { Button } from '../../components/ui';
+import { cn } from '../../utils/cn';
 
 interface PurchaseTableProps {
   orders: PurchaseOrder[];
   onView: (order: PurchaseOrder) => void;
-  onUpdateStatus: (orderId: string, newStatus: string) => void;
-
 }
 
-export default function PurchaseTable({ orders, onView, onUpdateStatus }: PurchaseTableProps) {
+export default function PurchaseTable({ orders, onView }: PurchaseTableProps) {
   if (orders.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-10">
-        سفارشی ثبت نشده است.
-      </div>
-    );
+    return <div className="text-center text-gray-500 py-10">سفارشی ثبت نشده است.</div>;
   }
 
   return (
@@ -29,23 +24,22 @@ export default function PurchaseTable({ orders, onView, onUpdateStatus }: Purcha
           </tr>
         </thead>
         <tbody>
-          {orders.map((orderId) => (
-            <tr key={orderId.id} className="border-b hover:bg-gray-50">
-              <td className="p-4">{orderId.product}</td>
-              <td className="p-4">{orderId.quantity}</td>
+          {orders.map((order, index) => (
+            <tr key={order.id} className={cn(index % 2 === 0 ? "bg-white" : "bg-gray-50", "border-b hover:bg-gray-100")}>
+              <td className="p-4">{order.product}</td>
+              <td className="p-4">{order.quantity}</td>
               <td className="p-4">
-                <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
-                  {orderId.status}
+                <span className={cn(
+                  "px-3 py-1 rounded-full text-xs",
+                  order.status === 'در انتظار' && "bg-yellow-100 text-yellow-700",
+                  order.status === 'تایید شده' && "bg-green-100 text-green-700",
+                  order.status === 'تحویل داده شده' && "bg-blue-100 text-blue-700"
+                )}>
+                  {order.status}
                 </span>
               </td>
-              <td className="p-4 flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onView(orderId)}
-                >
-                  مشاهده
-                </Button>
-                <Button size="sm" onClick={() => onUpdateStatus(orderId.id, 'تایید شده')}>
-                  تایید
-                </Button>
+              <td className="p-4">
+                <Button size="sm" variant="outline" onClick={() => onView(order)}>مشاهده</Button>
               </td>
             </tr>
           ))}
