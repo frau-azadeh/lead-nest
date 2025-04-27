@@ -1,5 +1,3 @@
-// src/features/purchase/purchaseSlice.ts
-
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { supabase } from '../../lib/supabaseClient';
 import { PurchaseOrder } from '../../types/purchaseOrder';
@@ -16,45 +14,44 @@ const initialState: PurchaseState = {
   error: null,
 };
 
-// ✅ گرفتن سفارشات
+// گرفتن لیست سفارش‌ها
 export const fetchPurchaseOrders = createAsyncThunk<
   PurchaseOrder[],
   void,
   { rejectValue: string }
->(
-  'purchase/fetchPurchaseOrders',
-  async (_, { rejectWithValue }) => {
-    const { data, error } = await supabase.from('purchase_orders').select('*');
-    if (error || !data) {
-      return rejectWithValue(error?.message || 'مشکل در دریافت سفارشات');
-    }
-    return data as PurchaseOrder[];
-  }
-);
+>('purchase/fetchPurchaseOrders', async (_, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from('purchase_orders')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-// ✅ آپدیت وضعیت سفارش
+  if (error || !data) {
+    return rejectWithValue(error?.message || 'خطا در دریافت سفارش‌ها');
+  }
+
+  return data as PurchaseOrder[];
+});
+
+// به‌روزرسانی وضعیت سفارش
 export const updatePurchaseOrderStatus = createAsyncThunk<
   PurchaseOrder,
   { id: string; status: string },
   { rejectValue: string }
->(
-  'purchase/updatePurchaseOrderStatus',
-  async ({ id, status }, { rejectWithValue }) => {
-    const { data, error } = await supabase
-      .from('purchase_orders')
-      .update({ status })
-      .eq('id', id)
-      .select()
-      .single();
+>('purchase/updatePurchaseOrderStatus', async ({ id, status }, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from('purchase_orders')
+    .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
 
-    if (error || !data) {
-      return rejectWithValue(error?.message || 'خطا در آپدیت سفارش');
-    }
-    return data as PurchaseOrder;
+  if (error || !data) {
+    return rejectWithValue(error?.message || 'خطا در به‌روزرسانی سفارش');
   }
-);
 
-// ✅ ثبت سفارش جدید
+  return data as PurchaseOrder;
+});
+
 export const createPurchaseOrder = createAsyncThunk<
   PurchaseOrder,
   { product: string; quantity: number },
@@ -64,24 +61,22 @@ export const createPurchaseOrder = createAsyncThunk<
   async ({ product, quantity }, { rejectWithValue }) => {
     const { data, error } = await supabase
       .from('purchase_orders')
-      .insert([
-        {
-          product,
-          quantity,
-          status: 'در انتظار', // 👈 اینجا خودمون مقدار `status` رو میذاریم
-        }
-      ])
+      .insert([{ product, quantity, status: 'در انتظار' }])
       .select()
       .single();
 
     if (error || !data) {
-      return rejectWithValue(error?.message || 'خطا در ثبت سفارش');
+      return rejectWithValue(error?.message || 'خطا در ثبت سفارش جدید');
     }
+
     return data as PurchaseOrder;
   }
 );
 
-// Slice
+
+// ثبت سفارش جدید
+
+
 const purchaseSlice = createSlice({
   name: 'purchase',
   initialState,
@@ -98,18 +93,16 @@ const purchaseSlice = createSlice({
       })
       .addCase(fetchPurchaseOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'خطا در دریافت سفارشات';
+        state.error = action.payload || 'خطا در دریافت سفارش‌ها';
       })
-
       .addCase(updatePurchaseOrderStatus.fulfilled, (state, action) => {
         const updatedOrder = action.payload;
         state.orders = state.orders.map((order) =>
           order.id === updatedOrder.id ? { ...order, status: updatedOrder.status } : order
         );
       })
-
       .addCase(createPurchaseOrder.fulfilled, (state, action) => {
-        state.orders.unshift(action.payload);
+        state.orders.unshift(action.payload); // سفارش جدید رو بیار اول لیست
       });
   },
 });
