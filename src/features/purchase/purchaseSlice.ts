@@ -42,7 +42,6 @@ export const updatePurchaseOrderStatus = createAsyncThunk<
   }
 );
 
-// ثبت سفارش جدید
 export const createPurchaseOrder = createAsyncThunk<
   PurchaseOrder,
   { product: string; quantity: number; status: string },
