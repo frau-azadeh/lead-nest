@@ -5,7 +5,8 @@ import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'outline' | 'destructive';
+  size?: 'sm';
 }
 
 export default function Button({ children, isLoading, variant = 'primary', className, ...props }: ButtonProps) {
