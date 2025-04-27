@@ -1,11 +1,12 @@
 // src/pages/PurchaseDashboard.tsx
 
+import PurchaseOrdersList from '../components/purchase/PurchaseOrdersList';
+
 export default function PurchaseDashboard() {
-    return (
-      <div className="text-center py-10">
-        <h1 className="text-3xl font-bold mb-4">داشبورد خرید</h1>
-        <p>خوش آمدید به بخش خرید.</p>
-      </div>
-    );
-  }
-  
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">مدیریت سفارشات خرید</h1>
+      <PurchaseOrdersList />
+    </div>
+  );
+}
