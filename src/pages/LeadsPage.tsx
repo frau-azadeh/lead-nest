@@ -1,8 +1,11 @@
+// src/pages/LeadsPage.tsx
+
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { deleteLead, setEditingLead } from '../features/leads/leadsSlice';
 import LeadForm from '../components/forms/LeadForm';
-import  Table  from '../components/ui/Table';
+import LeadsTable from '../components/leads/LeadsTable';
+import LeadFilters from '../components/leads/LeadFilters';
 import { Pagination } from '../components/ui/Pagination';
 import { usePagination } from '../components/hooks/usePagination';
 import { toast } from 'react-hot-toast';
@@ -12,14 +15,21 @@ export default function LeadsPage() {
   const dispatch = useAppDispatch();
   const { leads } = useAppSelector((state) => state.leads);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(''); // 🔥 استیت سرچ
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const itemsPerPage = 5;
 
-  // 🔥 فیلتر کردن بر اساس سرچ
-  const filteredLeads = leads.filter((lead) =>
-    lead.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lead.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // فیلتر کردن دیتا
+  const filteredLeads = leads.filter((lead) => {
+    const matchesSearch =
+      lead.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === 'all' || lead.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const { paginatedItems, totalPages } = usePagination<Lead>(filteredLeads, currentPage, itemsPerPage);
 
@@ -46,22 +56,26 @@ export default function LeadsPage() {
         <h1 className="text-3xl font-bold">سرنخ‌ها</h1>
       </div>
 
-      {/* 🔎 Input سرچ */}
-      <div className="flex justify-end mb-6">
-        <input
-          type="text"
-          placeholder="جستجو بر اساس نام یا ایمیل..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-4 py-2 rounded w-full max-w-md"
-        />
-      </div>
+      {/* 🔎 فیلتر سرچ + وضعیت */}
+      <LeadFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
 
+      {/* 📋 فرم ثبت یا ویرایش سرنخ */}
       <LeadForm />
 
-      <Table leads={paginatedItems} onEdit={handleEdit} onDelete={handleDelete} />
+      {/* 📋 جدول سرنخ‌ها */}
+      <div className="mt-8">
+        <LeadsTable leads={paginatedItems} onEdit={handleEdit} onDelete={handleDelete} />
+      </div>
 
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+      {/* 📄 صفحه‌بندی */}
+      <div className="mt-6 flex justify-center">
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+      </div>
     </div>
   );
 }
