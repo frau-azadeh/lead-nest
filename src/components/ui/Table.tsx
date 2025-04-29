@@ -1,33 +1,15 @@
-// src/components/ui/Table.tsx
-
 import { Edit, Trash2 } from 'lucide-react';
 import { Lead } from '../../types/lead';
-import { useState } from 'react';
-import DeleteConfirmModal from '../../components/ui/DeleteConfirmModal';
+import { Button } from '../../components/ui';
 
 interface TableProps {
   leads: Lead[];
   onEdit: (lead: Lead) => void;
   onDelete: (lead: Lead) => void;
+  renderStatus?: (lead: Lead) => React.ReactNode;
 }
 
-export default function Table({ leads, onEdit, onDelete }: TableProps) {
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-
-  const handleDelete = (lead: Lead) => {
-    setSelectedLead(lead);
-    setOpenDeleteModal(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedLead) {
-      onDelete(selectedLead);
-      setSelectedLead(null);
-    }
-    setOpenDeleteModal(false);
-  };
-
+export default function Table({ leads, onEdit, onDelete, renderStatus }: TableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border">
       <table className="min-w-full bg-white">
@@ -49,36 +31,30 @@ export default function Table({ leads, onEdit, onDelete }: TableProps) {
               <td className="px-4 py-2">{lead.email}</td>
               <td className="px-4 py-2">{lead.phone_number}</td>
               <td className="px-4 py-2">{lead.company}</td>
-              <td className="px-4 py-2">{lead.status}</td>
-              <td className="px-4 py-2 text-center flex items-center justify-center space-x-2">
-                <Edit
-                  size={20}
-                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
+              <td className="px-4 py-2">
+                {renderStatus ? renderStatus(lead) : lead.status}
+              </td>
+              <td className="px-4 py-2 text-center flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 border-blue-500 hover:bg-blue-50"
                   onClick={() => onEdit(lead)}
-                />
-                <Trash2
-                  size={20}
-                  className="text-red-600 hover:text-red-800 cursor-pointer"
-                  onClick={() => handleDelete(lead)}
-                />
+                >
+                  <Edit size={16} />
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(lead)}
+                >
+                  <Trash2 size={16} />
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* مدال تایید حذف */}
-      {openDeleteModal && selectedLead && (
-        <DeleteConfirmModal
-          title="حذف سرنخ"
-          description={`آیا مطمئن هستید که می‌خواهید "${selectedLead.full_name}" را حذف کنید؟`}
-          onConfirm={confirmDelete}
-          onCancel={() => {
-            setOpenDeleteModal(false);
-            setSelectedLead(null);
-          }}
-        />
-      )}
     </div>
   );
 }
