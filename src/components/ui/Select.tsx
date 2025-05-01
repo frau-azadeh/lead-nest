@@ -28,8 +28,7 @@ const Select: React.FC<SelectProps> = ({
         ))}
       </select>
       {error && <span className='text-red-500 text-xs'>{error}</span>}
-    </div>
+    </div> 
   )
 }
-
 export default Select
