@@ -76,7 +76,7 @@ export default function LeadForm() {
       </div>
 
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-2xl font-bold mb-6 mt-6">
           {editingLead ? 'Edit Lead' : 'Add New Lead'}
         </h2>
 

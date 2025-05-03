@@ -1,7 +1,6 @@
-// src/components/ui/Modal.tsx
-
-import { ReactNode } from 'react';
-import { cn } from '../..//utils/cn';
+import React, { ReactNode, useEffect, useRef } from 'react';
+import Button from './Button';
+import { cn } from '../../utils/cn';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,25 +8,65 @@ interface ModalProps {
   children: ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  children
+}) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // ESC to close
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  // Prevent background scroll
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  // Click outside to close
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={handleBackdropClick}
+    >
       <div
+        ref={modalRef}
         className={cn(
           'bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative',
           'animate-fadeIn'
         )}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
+        <div className="flex justify-between items-center mb-4">
+          <Button
+            onClick={onClose}
+            variant="outline"
+            size="sm"
+            className="p-1"
+            aria-label="Close Modal"
+          >
+            ✕
+          </Button>
+        </div>
         {children}
       </div>
     </div>
   );
-}
+};
+
+export default Modal;

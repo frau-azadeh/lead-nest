@@ -6,7 +6,7 @@ import { deleteLead, setEditingLead } from '../features/leads/leadsSlice';
 import LeadForm from '../components/forms/LeadForm';
 import LeadsTable from '../components/leads/LeadsTable';
 import LeadFilters from '../components/leads/LeadFilters';
-import { Pagination } from '../components/ui/Pagination';
+import { Pagination } from '../components/ui';
 import { usePagination } from '../components/hooks/usePagination';
 import { toast } from 'react-hot-toast';
 import { Lead } from '../types/lead';

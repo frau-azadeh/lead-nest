@@ -1,30 +1,51 @@
-// src/components/ui/Pagination.tsx
+import React from 'react'
+import Button from './Button'
 
-import Button  from '../../components/ui/Button';
+interface PaginationProps{
 
-interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  onPageChange: (page:number) => void;
+
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-  if (totalPages <= 1) return null;
-
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
+const Pagination:React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
+  if(totalPages<=1) return null;
+  const pages = Array.from({ length: totalPages }, (_,i) => i+1);
   return (
-    <div className="flex justify-center mt-8 space-x-2">
-      {pages.map((page) => (
-        <Button
-          key={page}
-          variant={page === currentPage ? 'primary' : 'secondary'}
-          onClick={() => onPageChange(page)}
-          className="px-4 py-2 rounded"
-        >
-          {page}
-        </Button>
-      ))}
-    </div>
-  );
+    <div className="flex justify-center mt-8 gap-x-2">
+  <Button
+    disabled={currentPage === 1}
+    onClick={() => onPageChange(currentPage - 1)}
+    variant="outline"
+  >
+    قبلی
+  </Button>
+
+  {pages.map((page) => (
+    <Button
+      key={page}
+      variant={page === currentPage ? 'primary' : 'secondary'}
+      onClick={() => onPageChange(page)}
+    >
+      {page}
+    </Button>
+  ))}
+
+  <Button
+    disabled={currentPage === totalPages}
+    onClick={() => onPageChange(currentPage + 1)}
+    variant="outline"
+  >
+    بعدی
+  </Button>
+</div>
+
+  )
 }
+
+export default Pagination
