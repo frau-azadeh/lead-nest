@@ -2,14 +2,19 @@ import { Edit, Trash2 } from 'lucide-react';
 import { Lead } from '../../types/lead';
 import { Button } from '../../components/ui';
 
-interface TableProps {
-  leads: Lead[];
-  onEdit: (lead: Lead) => void;
-  onDelete: (lead: Lead) => void;
-  renderStatus?: (lead: Lead) => React.ReactNode;
+interface TableProps<T extends Lead> {
+  leads: T[];
+  onEdit: (lead: T) => void;
+  onDelete: (lead: T) => void;
+  renderStatus?: (lead: T) => React.ReactNode;
 }
 
-export default function Table({ leads, onEdit, onDelete, renderStatus }: TableProps) {
+export default function Table<T extends Lead>({
+  leads,
+  onEdit,
+  onDelete,
+  renderStatus,
+}: TableProps<T>) {
   return (
     <div className="overflow-x-auto rounded-lg border">
       <table className="min-w-full bg-white">
@@ -23,7 +28,6 @@ export default function Table({ leads, onEdit, onDelete, renderStatus }: TablePr
             <th className="px-4 py-2 text-center">عملیات</th>
           </tr>
         </thead>
-
         <tbody>
           {leads.map((lead) => (
             <tr key={lead.id} className="border-b hover:bg-gray-50">
