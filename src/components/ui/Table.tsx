@@ -1,6 +1,6 @@
-import { Edit, Trash2 } from 'lucide-react';
 import { Lead } from '../../types/lead';
 import { Button } from '../../components/ui';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface TableProps<T extends Lead> {
   leads: T[];
@@ -10,55 +10,48 @@ interface TableProps<T extends Lead> {
 }
 
 export default function Table<T extends Lead>({
-  leads,
+  leads = [], // ✅ مقدار پیش‌فرض
   onEdit,
   onDelete,
   renderStatus,
 }: TableProps<T>) {
   return (
     <div className="overflow-x-auto rounded-lg border">
-      <table className="min-w-full bg-white">
-        <thead className="bg-gray-100 text-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-start">نام کامل</th>
-            <th className="px-4 py-2 text-start">ایمیل</th>
-            <th className="px-4 py-2 text-start">شماره تماس</th>
-            <th className="px-4 py-2 text-start">شرکت</th>
-            <th className="px-4 py-2 text-start">وضعیت</th>
-            <th className="px-4 py-2 text-center">عملیات</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leads.map((lead) => (
-            <tr key={lead.id} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{lead.full_name}</td>
-              <td className="px-4 py-2">{lead.email}</td>
-              <td className="px-4 py-2">{lead.phone_number}</td>
-              <td className="px-4 py-2">{lead.company}</td>
-              <td className="px-4 py-2">
-                {renderStatus ? renderStatus(lead) : lead.status}
-              </td>
-              <td className="px-4 py-2 text-center flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 border-blue-500 hover:bg-blue-50"
-                  onClick={() => onEdit(lead)}
-                >
-                  <Edit size={16} />
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onDelete(lead)}
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </td>
+      {leads.length === 0 ? (
+        <p className="text-center text-gray-500 py-4">هیچ داده‌ای یافت نشد.</p>
+      ) : (
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th>نام کامل</th>
+              <th>ایمیل</th>
+              <th>شماره تماس</th>
+              <th>شرکت</th>
+              <th>وضعیت</th>
+              <th>عملیات</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {leads.map((lead) => (
+              <tr key={lead.id}>
+                <td>{lead.full_name}</td>
+                <td>{lead.email}</td>
+                <td>{lead.phone_number}</td>
+                <td>{lead.company}</td>
+                <td>{renderStatus ? renderStatus(lead) : lead.status}</td>
+                <td>
+                  <Button onClick={() => onEdit(lead)}>
+                    <Edit size={16} />
+                  </Button>
+                  <Button onClick={() => onDelete(lead)}>
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
