@@ -42,11 +42,17 @@ export default function LeadForm() {
 
   const onSubmit = async (data: LeadFormData) => {
     try {
+      const cleanedData = {
+        ...data,
+        phone_number: data.phone_number ?? '',
+        company: data.company ?? '',
+      };
+  
       if (editingLead) {
-        await dispatch(updateLead({ ...editingLead, ...data })).unwrap();
+        await dispatch(updateLead({ ...editingLead, ...cleanedData })).unwrap();
         toast.success('Lead updated successfully!');
       } else {
-        await dispatch(createLead(data)).unwrap();
+        await dispatch(createLead(cleanedData)).unwrap();
         toast.success('Lead added successfully!');
       }
       reset();
@@ -56,6 +62,7 @@ export default function LeadForm() {
       toast.error('An error occurred!');
     }
   };
+  
 
   const handleAddNewLead = () => {
     reset();
