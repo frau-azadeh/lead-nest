@@ -1,4 +1,3 @@
-// types/LeadWithProduct.ts
 import { Lead } from './lead';
 
 export interface LeadWithProduct extends Lead {
