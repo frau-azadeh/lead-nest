@@ -1,127 +1,89 @@
-import { useEffect, useState } from 'react';
+// src/pages/SalesDashboard.tsx
+
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchSales, deleteSale, updateStatus, setProduct } from '../features/sales/salesSlice';
 import SalesTable from '../components/sales/SalesTable';
-import { LeadWithProduct } from '../types/LeadWithProduct';
-import { Button } from '../components/ui';
-import Modal from '../components/ui/Modal';
-import { supabase } from '../lib/supabaseClient';
 import { toast } from 'react-hot-toast';
+import { LeadWithProduct } from '../types/LeadWithProduct';
 
 export default function SalesDashboard() {
   const dispatch = useAppDispatch();
   const { sales, loading, error } = useAppSelector((state) => state.sales);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedLead, setSelectedLead] = useState<LeadWithProduct | null>(null);
-  const [productName, setProductName] = useState('');
-  const [productQuantity, setProductQuantity] = useState(1);
-
+  // 👉 فچ داده‌ها
   useEffect(() => {
     dispatch(fetchSales());
   }, [dispatch]);
 
-  const handleEdit = async (lead: LeadWithProduct) => {
-    const newName = prompt('نام کامل جدید:', lead.full_name);
-    const newCompany = prompt('نام شرکت جدید:', lead.company);
-    if (newName && newCompany) {
-      const { error } = await supabase
-        .from('leads')
-        .update({ full_name: newName, company: newCompany })
-        .eq('id', lead.id);
-
-      if (error) {
-        toast.error('خطا در ویرایش');
-        console.error(error);
-      } else {
-        toast.success('اطلاعات ویرایش شد');
-        dispatch(fetchSales());
-      }
+  const handleDelete = async (lead: LeadWithProduct) => {
+    try {
+      await dispatch(deleteSale(lead.id)).unwrap();
+      toast.success('مشتری با موفقیت حذف شد');
+    } catch (err) {
+      toast.error('حذف مشتری ناموفق بود');
     }
   };
 
-  const handleDelete = (lead: LeadWithProduct) => {
-    dispatch(deleteSale(lead.id));
+  const handleAddProduct = async (lead: LeadWithProduct) => {
+    const productName = prompt('نام محصول؟');
+    const productQuantityStr = prompt('تعداد محصول؟');
+    const productQuantity = Number(productQuantityStr);
+
+    if (!productName || isNaN(productQuantity)) {
+      toast.error('اطلاعات محصول نامعتبر است');
+      return;
+    }
+
+    dispatch(setProduct({
+      id: lead.id,
+      product_name: productName,
+      product_quantity: productQuantity,
+    }));
+
+    toast.success('محصول اضافه شد (محلی)');
   };
 
-  const handleChangeStatus = (lead: LeadWithProduct) => {
-    const newStatus = lead.status === 'new' ? 'تماس گرفته شده' : 'new';
-    dispatch(updateStatus({ id: lead.id, status: newStatus }));
-  };
+  const handleChangeStatus = async (lead: LeadWithProduct) => {
+    const status = prompt('وضعیت جدید؟ (new/contacted/qualified/lost)');
+    if (!status) return;
 
-  const handleAddProduct = (lead: LeadWithProduct) => {
-    setSelectedLead(lead);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveProduct = async () => {
-    if (selectedLead) {
-      const { error } = await supabase.from('invoices').insert({
-        lead_id: selectedLead.id,
-        type: productName,
-        amount: productQuantity,
-      });
-
-      if (error) {
-        toast.error('خطا در ذخیره محصول');
-        console.error(error);
-        return;
-      }
-
-      dispatch(
-        setProduct({
-          id: selectedLead.id,
-          product_name: productName,
-          product_quantity: productQuantity,
-        })
-      );
-
-      toast.success('محصول با موفقیت ذخیره شد');
-      setIsModalOpen(false);
-      setProductName('');
-      setProductQuantity(1);
+    try {
+      await dispatch(updateStatus({ id: lead.id, status })).unwrap();
+      toast.success('وضعیت با موفقیت تغییر کرد');
+    } catch (err) {
+      toast.error('تغییر وضعیت ناموفق بود');
     }
   };
+
+  const handleInvoice = (lead: LeadWithProduct) => {
+    toast('فاکتور برای ' + lead.full_name);
+  };
+
+  const handlePreInvoice = (lead: LeadWithProduct) => {
+    toast('پیش‌فاکتور برای ' + lead.full_name);
+  };
+
+  const handleDelivery = (lead: LeadWithProduct) => {
+    toast('حواله برای ' + lead.full_name);
+  };
+
+  if (loading) return <p>در حال بارگذاری...</p>;
+  if (error) return <p>خطا: {error}</p>;
 
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">داشبورد فروش</h1>
-      {loading && <p>در حال بارگیری...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
       <SalesTable
         sales={sales}
-        onEdit={handleEdit}
+        onEdit={(lead) => console.log('ویرایش:', lead)}
         onDelete={handleDelete}
         onAddProduct={handleAddProduct}
         onChangeStatus={handleChangeStatus}
+        onInvoice={handleInvoice}
+        onPreInvoice={handlePreInvoice}
+        onDelivery={handleDelivery}
       />
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h2 className="text-lg font-semibold mb-2">
-          افزودن محصول به {selectedLead?.full_name}
-        </h2>
-        <div className="flex flex-col gap-2">
-          <label>
-            نام محصول:
-            <input
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              className="border p-1 w-full"
-            />
-          </label>
-          <label>
-            تعداد:
-            <input
-              type="number"
-              value={productQuantity}
-              onChange={(e) => setProductQuantity(Number(e.target.value))}
-              className="border p-1 w-full"
-            />
-          </label>
-          <Button onClick={handleSaveProduct}>ذخیره</Button>
-        </div>
-      </Modal>
     </div>
   );
 }
