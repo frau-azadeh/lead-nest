@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Lead } from '../../types/lead';
+import { LeadWithProduct } from '../../types/LeadWithProduct'; // نوع داده فروش
 import { useAppDispatch } from '../../store/hooks';
-import { updateLead } from '../../features/leads/leadsSlice';
+import { updateStatus } from '../../features/sales/salesSlice'; // اینجا تغییر کرد
 import { toast } from 'react-hot-toast';
 import { cn } from '../../utils/cn';
 import { createPortal } from 'react-dom';
 
 interface LeadStatusChangerProps {
-  lead: Lead;
+  lead: LeadWithProduct;
 }
 
 const statusOptions = [
@@ -25,7 +25,7 @@ export default function LeadStatusChanger({ lead }: LeadStatusChangerProps) {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await dispatch(updateLead({ ...lead, status: newStatus })).unwrap();
+      await dispatch(updateStatus({ id: lead.id, status: newStatus })).unwrap(); // ✅ تغییر اصلی این خط
       toast.success('وضعیت با موفقیت تغییر کرد!');
     } catch {
       toast.error('خطا در تغییر وضعیت');
@@ -34,18 +34,18 @@ export default function LeadStatusChanger({ lead }: LeadStatusChangerProps) {
     }
   };
 
-  // محاسبه موقعیت دقیق dropdown
+  // محاسبه موقعیت dropdown
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setPosition({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX + rect.width / 2 - 80, // center align
+        left: rect.left + window.scrollX + rect.width / 2 - 80,
       });
     }
   }, [isOpen]);
 
-  // بستن dropdown با کلیک بیرون
+  // بستن با کلیک بیرون
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (!buttonRef.current?.contains(e.target as Node)) {
