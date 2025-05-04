@@ -1,98 +1,105 @@
-// src/components/forms/LeadForm.tsx
-
-import { useState, useEffect } from 'react';
-import { useForm, Resolver } from 'react-hook-form';
-import { z } from 'zod';
+// components/forms/LeadForm.tsx
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LeadFormData } from '../../types/LeadFormData';
+import { leadSchema } from '../../types/leadSchema';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createLead, updateLead, clearEditingLead } from '../../features/leads/leadsSlice';
-import { Button, Input, Modal } from '../../components/ui';
 import { toast } from 'react-hot-toast';
 
-// اسکیمای فرم
-const leadSchema = z.object({
-  full_name: z.string().min(3, 'Full Name is required'),
-  email: z.string().email('Invalid Email'),
-  phone_number: z.string().optional(),
-  company: z.string().optional(),
-  status: z.string().default('new'),
-});
+interface LeadFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-type LeadFormData = z.infer<typeof leadSchema>;
-
-export default function LeadForm() {
+export default function LeadForm({ isOpen, onClose }: LeadFormProps) {
   const dispatch = useAppDispatch();
-  const { editingLead } = useAppSelector((state) => state.leads);
-  const [isOpen, setIsOpen] = useState(false);
+  const editingLead = useAppSelector((state) => state.leads.editingLead);
 
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<LeadFormData>({
-    resolver: zodResolver(leadSchema) as unknown as Resolver<LeadFormData>,
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<LeadFormData>({
+    resolver: zodResolver(leadSchema),
+    defaultValues: { status: 'new' },
   });
 
+  // پر کردن فرم هنگام ویرایش
   useEffect(() => {
     if (editingLead) {
-      setIsOpen(true);
       setValue('full_name', editingLead.full_name);
       setValue('email', editingLead.email);
       setValue('phone_number', editingLead.phone_number ?? '');
       setValue('company', editingLead.company ?? '');
-      setValue('status', editingLead.status);
+      setValue('status', editingLead.status ?? 'new');
+    } else {
+      reset();
     }
-  }, [editingLead, setValue]);
+  }, [editingLead, setValue, reset]);
 
-  const onSubmit = async (data: LeadFormData) => {
+  const onSubmit: SubmitHandler<LeadFormData> = async (data) => {
     try {
       if (editingLead) {
         await dispatch(updateLead({ ...editingLead, ...data })).unwrap();
-        toast.success('Lead updated successfully!');
+        toast.success('Lead updated!');
       } else {
         await dispatch(createLead(data)).unwrap();
-        toast.success('Lead added successfully!');
+        toast.success('Lead created!');
       }
-      reset();
-      setIsOpen(false);
+
+      onClose();
       dispatch(clearEditingLead());
-    } catch (error) {
-      toast.error('An error occurred!');
+      reset();
+    } catch {
+      toast.error('An error occurred');
     }
   };
 
-  const handleAddNewLead = () => {
-    reset();
-    dispatch(clearEditingLead());
-    setIsOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsOpen(false);
-    reset();
-    dispatch(clearEditingLead());
-  };
-
   return (
-    <>
-      <div className="flex justify-end mb-6">
-        <Button onClick={handleAddNewLead}>➕ Add Lead</Button>
-      </div>
+    <div>
+      {isOpen && (
+        <div className="modal">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label>نام کامل</label>
+              <input {...register('full_name')} />
+              {errors.full_name && <p>{errors.full_name.message}</p>}
+            </div>
 
-      <Modal isOpen={isOpen} onClose={handleCloseModal}>
-        <h2 className="text-2xl font-bold mb-6 mt-6">
-          {editingLead ? 'Edit Lead' : 'Add New Lead'}
-        </h2>
+            <div>
+              <label>ایمیل</label>
+              <input {...register('email')} />
+              {errors.email && <p>{errors.email.message}</p>}
+            </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input label="Full Name" {...register('full_name')} error={errors.full_name?.message} />
-          <Input label="Email" {...register('email')} error={errors.email?.message} />
-          <Input label="Phone Number" {...register('phone_number')} error={errors.phone_number?.message} />
-          <Input label="Company" {...register('company')} error={errors.company?.message} />
+            <div>
+              <label>شماره تماس</label>
+              <input {...register('phone_number')} />
+              {errors.phone_number && <p>{errors.phone_number.message}</p>}
+            </div>
 
-          <div className="flex justify-end">
-            <Button type="submit" isLoading={isSubmitting}>
-              {editingLead ? 'Update Lead' : 'Save Lead'}
-            </Button>
-          </div>
-        </form>
-      </Modal>
-    </>
+            <div>
+              <label>شرکت</label>
+              <input {...register('company')} />
+              {errors.company && <p>{errors.company.message}</p>}
+            </div>
+
+            <div>
+              <label>وضعیت</label>
+              <input {...register('status')} />
+              {errors.status && <p>{errors.status.message}</p>}
+            </div>
+
+            <button type="submit">
+              {editingLead ? 'Update Lead' : 'Create Lead'}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
