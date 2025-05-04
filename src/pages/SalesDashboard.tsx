@@ -1,72 +1,52 @@
 // src/pages/SalesDashboard.tsx
-
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchSales, deleteSale, updateStatus, setProduct } from '../features/sales/salesSlice';
+import { fetchLeads, deleteLead, setEditingLead } from '../features/leads/leadsSlice';
+import { createInvoice } from '../features/invoices/invoicesSlice'; // 👈 اضافه شد
 import SalesTable from '../components/sales/SalesTable';
+import LeadForm from '../components/forms/LeadForm';
 import { toast } from 'react-hot-toast';
-import { LeadWithProduct } from '../types/LeadWithProduct';
+import { Lead } from '../types/lead';
 
 export default function SalesDashboard() {
   const dispatch = useAppDispatch();
-  const { sales, loading, error } = useAppSelector((state) => state.sales);
+  const { leads, loading, error } = useAppSelector((state) => state.leads);
 
-  // 👉 فچ داده‌ها
   useEffect(() => {
-    dispatch(fetchSales());
+    dispatch(fetchLeads());
   }, [dispatch]);
 
-  const handleDelete = async (lead: LeadWithProduct) => {
+  const handleDelete = async (lead: Lead) => {
     try {
-      await dispatch(deleteSale(lead.id)).unwrap();
-      toast.success('مشتری با موفقیت حذف شد');
-    } catch (err) {
-      toast.error('حذف مشتری ناموفق بود');
+      await dispatch(deleteLead(lead.id)).unwrap();
+      toast.success('مشتری حذف شد');
+    } catch {
+      toast.error('حذف ناموفق');
     }
   };
 
-  const handleAddProduct = async (lead: LeadWithProduct) => {
-    const productName = prompt('نام محصول؟');
-    const productQuantityStr = prompt('تعداد محصول؟');
-    const productQuantity = Number(productQuantityStr);
-
-    if (!productName || isNaN(productQuantity)) {
-      toast.error('اطلاعات محصول نامعتبر است');
-      return;
-    }
-
-    dispatch(setProduct({
-      id: lead.id,
-      product_name: productName,
-      product_quantity: productQuantity,
-    }));
-
-    toast.success('محصول اضافه شد (محلی)');
-  };
-
-  const handleChangeStatus = async (lead: LeadWithProduct) => {
-    const status = prompt('وضعیت جدید؟ (new/contacted/qualified/lost)');
-    if (!status) return;
-
+  const handleAddProduct = async (lead: Lead, productName: string, productQuantity: number) => {
     try {
-      await dispatch(updateStatus({ id: lead.id, status })).unwrap();
-      toast.success('وضعیت با موفقیت تغییر کرد');
-    } catch (err) {
-      toast.error('تغییر وضعیت ناموفق بود');
+      await dispatch(createInvoice({
+        lead_id: lead.id,
+        type: 'invoice',
+        amount: productQuantity,
+        product_name: productName, // 👈 اضافه شد
+      })).unwrap();
+      toast.success('محصول به فاکتور اضافه شد');
+    } catch {
+      toast.error('خطا در افزودن محصول');
     }
   };
+  
 
-  const handleInvoice = (lead: LeadWithProduct) => {
-    toast('فاکتور برای ' + lead.full_name);
+  const handleEdit = (lead: Lead) => {
+    dispatch(setEditingLead(lead));
   };
 
-  const handlePreInvoice = (lead: LeadWithProduct) => {
-    toast('پیش‌فاکتور برای ' + lead.full_name);
-  };
-
-  const handleDelivery = (lead: LeadWithProduct) => {
-    toast('حواله برای ' + lead.full_name);
-  };
+  const handleInvoice = (lead: Lead) => toast(`فاکتور برای ${lead.full_name}`);
+  const handlePreInvoice = (lead: Lead) => toast(`پیش‌فاکتور برای ${lead.full_name}`);
+  const handleDelivery = (lead: Lead) => toast(`حواله برای ${lead.full_name}`);
 
   if (loading) return <p>در حال بارگذاری...</p>;
   if (error) return <p>خطا: {error}</p>;
@@ -74,12 +54,12 @@ export default function SalesDashboard() {
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">داشبورد فروش</h1>
+      <LeadForm />
       <SalesTable
-        sales={sales}
-        onEdit={(lead) => console.log('ویرایش:', lead)}
+        leads={leads}
+        onEdit={handleEdit}
         onDelete={handleDelete}
         onAddProduct={handleAddProduct}
-        onChangeStatus={handleChangeStatus}
         onInvoice={handleInvoice}
         onPreInvoice={handlePreInvoice}
         onDelivery={handleDelivery}
