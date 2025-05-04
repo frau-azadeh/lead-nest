@@ -1,9 +1,6 @@
-// src/features/leads/leadsSlice.ts
-
-import { supabase } from '../../lib/supabaseClient';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { supabase } from '../../lib/supabaseClient';
 import { Lead } from '../../types/lead';
-import { getLeads, addLead } from '../../services/leadService';
 
 interface LeadsState {
   leads: Lead[];
@@ -19,55 +16,24 @@ const initialState: LeadsState = {
   editingLead: null,
 };
 
-// ==========================
-// Async Thunks
-// ==========================
-
-// Fetch Leads
 export const fetchLeads = createAsyncThunk<Lead[], void, { rejectValue: string }>(
   'leads/fetchLeads',
   async (_, { rejectWithValue }) => {
-    try {
-      const leads = await getLeads();
-      return leads;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('مشکلی پیش آمد');
-    }
+    const { data, error } = await supabase.from('leads').select('*');
+    if (error) return rejectWithValue(error.message);
+    return data as Lead[];
   }
 );
 
-// Create Lead
-export const createLead = createAsyncThunk<Lead[], Omit<Lead, 'id' | 'created_at'>, { rejectValue: string }>(
+export const createLead = createAsyncThunk<Lead, Omit<Lead, 'id' | 'created_at'>, { rejectValue: string }>(
   'leads/createLead',
   async (newLead, { rejectWithValue }) => {
-    try {
-      const lead = await addLead(newLead);
-      return lead;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('مشکلی پیش آمد');
-    }
+    const { data, error } = await supabase.from('leads').insert([newLead]).select().single();
+    if (error) return rejectWithValue(error.message);
+    return data as Lead;
   }
 );
 
-// Delete Lead
-export const deleteLead = createAsyncThunk<string, string, { rejectValue: string }>(
-  'leads/deleteLead',
-  async (leadId, { rejectWithValue }) => {
-    const { error } = await supabase.from('leads').delete().eq('id', leadId);
-    if (error) {
-      return rejectWithValue(error.message);
-    }
-    return leadId;
-  }
-);
-
-// Update Lead
 export const updateLead = createAsyncThunk<Lead, Lead, { rejectValue: string }>(
   'leads/updateLead',
   async (lead, { rejectWithValue }) => {
@@ -79,35 +45,37 @@ export const updateLead = createAsyncThunk<Lead, Lead, { rejectValue: string }>(
         phone_number: lead.phone_number,
         company: lead.company,
         status: lead.status,
+        product_name: lead.product_name ?? null,
+        product_quantity: lead.product_quantity ?? null,
       })
       .eq('id', lead.id);
-
-    if (error) {
-      return rejectWithValue(error.message);
-    }
-
+    if (error) return rejectWithValue(error.message);
     return lead;
   }
 );
 
-// ==========================
-// Slice
-// ==========================
+export const deleteLead = createAsyncThunk<string, string, { rejectValue: string }>(
+  'leads/deleteLead',
+  async (id, { rejectWithValue }) => {
+    const { error } = await supabase.from('leads').delete().eq('id', id);
+    if (error) return rejectWithValue(error.message);
+    return id;
+  }
+);
 
 const leadsSlice = createSlice({
   name: 'leads',
   initialState,
   reducers: {
-    setEditingLead(state, action: PayloadAction<Lead>) {
+    setEditingLead: (state, action: PayloadAction<Lead>) => {
       state.editingLead = action.payload;
     },
-    clearEditingLead(state) {
+    clearEditingLead: (state) => {
       state.editingLead = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Leads
       .addCase(fetchLeads.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,52 +86,20 @@ const leadsSlice = createSlice({
       })
       .addCase(fetchLeads.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? 'خطای نامشخص';
+        state.error = action.payload ?? 'خطا در دریافت داده‌ها';
       })
 
-      // Create Lead
-      .addCase(createLead.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(createLead.fulfilled, (state, action) => {
-        state.loading = false;
-        state.leads.unshift(action.payload[0]);
-      })
-      .addCase(createLead.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload ?? 'خطای نامشخص';
+        state.leads.unshift(action.payload);
       })
 
-      // Delete Lead
-      .addCase(deleteLead.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deleteLead.fulfilled, (state, action) => {
-        state.loading = false;
-        state.leads = state.leads.filter((lead) => lead.id !== action.payload);
-      })
-      .addCase(deleteLead.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload ?? 'خطای نامشخص';
-      })
-
-      // Update Lead
-      .addCase(updateLead.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(updateLead.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.leads.findIndex((lead) => lead.id === action.payload.id);
-        if (index !== -1) {
-          state.leads[index] = action.payload;
-        }
+        const index = state.leads.findIndex((l) => l.id === action.payload.id);
+        if (index !== -1) state.leads[index] = action.payload;
       })
-      .addCase(updateLead.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload ?? 'خطای نامشخص';
+
+      .addCase(deleteLead.fulfilled, (state, action) => {
+        state.leads = state.leads.filter((l) => l.id !== action.payload);
       });
   },
 });
