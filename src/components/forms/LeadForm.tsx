@@ -1,5 +1,4 @@
 // src/components/forms/LeadForm.tsx
-
 import { useState, useEffect } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,8 +7,8 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createLead, updateLead, clearEditingLead } from '../../features/leads/leadsSlice';
 import { Button, Input, Modal } from '../../components/ui';
 import { toast } from 'react-hot-toast';
+import { Lead } from '../../types/lead';
 
-// اسکیمای فرم
 const leadSchema = z.object({
   full_name: z.string().min(3, 'Full Name is required'),
   email: z.string().email('Invalid Email'),
@@ -42,19 +41,17 @@ export default function LeadForm() {
 
   const onSubmit = async (data: LeadFormData) => {
     try {
-      const cleanedData = {
-        ...data,
-        phone_number: data.phone_number ?? '',
-        company: data.company ?? '',
-      };
-  
+      const cleanedData = { ...data, phone_number: data.phone_number ?? '', company: data.company ?? '' };
+
       if (editingLead) {
-        await dispatch(updateLead({ ...editingLead, ...cleanedData })).unwrap();
+        const updatedLead: Omit<Lead, 'created_at'> = { ...editingLead, ...cleanedData };
+        await dispatch(updateLead(updatedLead)).unwrap();
         toast.success('Lead updated successfully!');
       } else {
         await dispatch(createLead(cleanedData)).unwrap();
         toast.success('Lead added successfully!');
       }
+
       reset();
       setIsOpen(false);
       dispatch(clearEditingLead());
@@ -62,7 +59,6 @@ export default function LeadForm() {
       toast.error('An error occurred!');
     }
   };
-  
 
   const handleAddNewLead = () => {
     reset();
