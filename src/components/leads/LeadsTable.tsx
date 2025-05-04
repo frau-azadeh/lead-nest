@@ -1,56 +1,57 @@
+// LeadsTable.tsx
 import { Lead } from '../../types/lead';
-import Table from '../ui/Table';
-import { toast } from 'react-hot-toast';
-import { Button } from '../../components/ui';
 import StatusBadge from './StatusBadge';
 import LeadStatusChanger from './LeadStatusChanger';
+import { Button } from '../ui';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface LeadsTableProps {
   leads: Lead[];
   onEdit: (lead: Lead) => void;
-  onDelete: (lead: Lead) => void;
+  onDelete: (lead: Lead) => void; // اینجا فقط callback ساده می‌فرستیم
 }
 
 export default function LeadsTable({ leads, onEdit, onDelete }: LeadsTableProps) {
-  const handleDeleteClick = (lead: Lead) => {
-    toast.custom((t) => (
-      <div className="bg-white shadow-md rounded-lg px-4 py-3 text-sm max-w-md w-full border">
-        <p className="text-gray-800 mb-3">آیا از حذف این سرنخ مطمئن هستید؟</p>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => toast.dismiss(t.id)}
-          >
-            انصراف
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => {
-              onDelete(lead);
-              toast.dismiss(t.id);
-              toast.success('سرنخ با موفقیت حذف شد');
-            }}
-          >
-            بله، حذف کن
-          </Button>
-        </div>
-      </div>
-    ));
-  };
-
   return (
-    <Table
-      leads={leads}
-      onEdit={onEdit}
-      onDelete={handleDeleteClick}
-      renderStatus={(lead) => (
-        <div className="flex items-center gap-2">
-          <StatusBadge status={lead.status} />
-          <LeadStatusChanger lead={lead} />
-        </div>
-      )}
-    />
+    <table className="w-full border">
+      <thead>
+        <tr>
+          <th>نام کامل</th>
+          <th>ایمیل</th>
+          <th>شماره تماس</th>
+          <th>شرکت</th>
+          <th>وضعیت</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {leads.length === 0 ? (
+          <tr>
+            <td colSpan={6} className="text-center p-4">هیچ داده‌ای یافت نشد.</td>
+          </tr>
+        ) : leads.map((lead) => (
+          <tr key={lead.id}>
+            <td>{lead.full_name}</td>
+            <td>{lead.email}</td>
+            <td>{lead.phone_number}</td>
+            <td>{lead.company}</td>
+            <td>
+              <div className="flex items-center gap-2">
+                <StatusBadge status={lead.status} />
+                <LeadStatusChanger lead={lead} />
+              </div>
+            </td>
+            <td className="flex gap-2">
+              <Button onClick={() => onEdit(lead)}>
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button variant="destructive" onClick={() => onDelete(lead)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
