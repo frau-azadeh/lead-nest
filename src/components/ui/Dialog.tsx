@@ -33,28 +33,44 @@ export const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) 
 };
 
 // 🟢 DialogContent
-export const DialogContent: React.FC<DialogSubComponentProps> = ({ children, className, ...props }) => (
+export const DialogContent: React.FC<DialogSubComponentProps> = ({
+  children,
+  className,
+  ...props
+}) => (
   <div className={className} {...props}>
     {children}
   </div>
 );
 
 // 🟢 DialogHeader
-export const DialogHeader: React.FC<DialogSubComponentProps> = ({ children, className, ...props }) => (
+export const DialogHeader: React.FC<DialogSubComponentProps> = ({
+  children,
+  className,
+  ...props
+}) => (
   <div className={`mb-4 border-b pb-2 ${className ?? ''}`} {...props}>
     {children}
   </div>
 );
 
 // 🟢 DialogTitle
-export const DialogTitle: React.FC<DialogSubComponentProps> = ({ children, className, ...props }) => (
+export const DialogTitle: React.FC<DialogSubComponentProps> = ({
+  children,
+  className,
+  ...props
+}) => (
   <h2 className={`text-lg font-bold ${className ?? ''}`} {...props}>
     {children}
   </h2>
 );
 
 // 🟢 DialogFooter
-export const DialogFooter: React.FC<DialogSubComponentProps> = ({ children, className, ...props }) => (
+export const DialogFooter: React.FC<DialogSubComponentProps> = ({
+  children,
+  className,
+  ...props
+}) => (
   <div className={`mt-4 flex justify-end space-x-2 ${className ?? ''}`} {...props}>
     {children}
   </div>

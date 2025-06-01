@@ -16,37 +16,39 @@ export const fetchPurchaseOrders = createAsyncThunk<PurchaseOrder[], void, { rej
   }
 );
 
-export const createPurchaseOrder = createAsyncThunk<PurchaseOrder, { product: string; quantity: number }, { rejectValue: string }>(
-  'purchase/createPurchaseOrder',
-  async ({ product, quantity }, { rejectWithValue }) => {
-    const { data, error } = await supabase
-      .from('purchase_orders')
-      .insert([{ product, quantity, status: 'در انتظار' }])
-      .select()
-      .single();
+export const createPurchaseOrder = createAsyncThunk<
+  PurchaseOrder,
+  { product: string; quantity: number },
+  { rejectValue: string }
+>('purchase/createPurchaseOrder', async ({ product, quantity }, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from('purchase_orders')
+    .insert([{ product, quantity, status: 'در انتظار' }])
+    .select()
+    .single();
 
-    if (error || !data) {
-      return rejectWithValue(error?.message || 'مشکل در ثبت سفارش');
-    }
-
-    return data;
+  if (error || !data) {
+    return rejectWithValue(error?.message || 'مشکل در ثبت سفارش');
   }
-);
 
-export const updatePurchaseOrderStatus = createAsyncThunk<PurchaseOrder, { id: string; status: string }, { rejectValue: string }>(
-  'purchase/updatePurchaseOrderStatus',
-  async ({ id, status }, { rejectWithValue }) => {
-    const { data, error } = await supabase
-      .from('purchase_orders')
-      .update({ status })
-      .eq('id', id)
-      .select()
-      .single();
+  return data;
+});
 
-    if (error || !data) {
-      return rejectWithValue(error?.message || 'مشکل در بروزرسانی سفارش');
-    }
+export const updatePurchaseOrderStatus = createAsyncThunk<
+  PurchaseOrder,
+  { id: string; status: string },
+  { rejectValue: string }
+>('purchase/updatePurchaseOrderStatus', async ({ id, status }, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from('purchase_orders')
+    .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
 
-    return data;
+  if (error || !data) {
+    return rejectWithValue(error?.message || 'مشکل در بروزرسانی سفارش');
   }
-);
+
+  return data;
+});

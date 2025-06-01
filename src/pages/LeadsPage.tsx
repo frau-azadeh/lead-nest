@@ -31,7 +31,11 @@ export default function LeadsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const { paginatedItems, totalPages } = usePagination<Lead>(filteredLeads, currentPage, itemsPerPage);
+  const { paginatedItems, totalPages } = usePagination<Lead>(
+    filteredLeads,
+    currentPage,
+    itemsPerPage
+  );
 
   const handleEdit = (lead: Lead) => {
     dispatch(setEditingLead(lead));
@@ -43,15 +47,18 @@ export default function LeadsPage() {
         <p>آیا از حذف "{lead.full_name}" مطمئن هستید؟</p>
         <div className="flex justify-end gap-2 mt-2">
           <Button onClick={() => toast.dismiss(t.id)}>انصراف</Button>
-          <Button variant="destructive" onClick={async () => {
-            try {
-              await dispatch(deleteLead(lead.id)).unwrap();
-              toast.dismiss(t.id);
-              toast.success('حذف شد!');
-            } catch {
-              toast.error('خطا در حذف!');
-            }
-          }}>
+          <Button
+            variant="destructive"
+            onClick={async () => {
+              try {
+                await dispatch(deleteLead(lead.id)).unwrap();
+                toast.dismiss(t.id);
+                toast.success('حذف شد!');
+              } catch {
+                toast.error('خطا در حذف!');
+              }
+            }}
+          >
             حذف کن
           </Button>
         </div>
@@ -79,7 +86,11 @@ export default function LeadsPage() {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {loading && <p className="text-center mt-4">در حال بارگذاری...</p>}

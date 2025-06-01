@@ -25,21 +25,31 @@ export default function PurchaseTable({ orders, onView }: PurchaseTableProps) {
         </thead>
         <tbody>
           {orders.map((order, index) => (
-            <tr key={order.id} className={cn(index % 2 === 0 ? "bg-white" : "bg-gray-50", "border-b hover:bg-gray-100")}>
+            <tr
+              key={order.id}
+              className={cn(
+                index % 2 === 0 ? 'bg-white' : 'bg-gray-50',
+                'border-b hover:bg-gray-100'
+              )}
+            >
               <td className="p-4">{order.product}</td>
               <td className="p-4">{order.quantity}</td>
               <td className="p-4">
-                <span className={cn(
-                  "px-3 py-1 rounded-full text-xs",
-                  order.status === 'در انتظار' && "bg-yellow-100 text-yellow-700",
-                  order.status === 'تایید شده' && "bg-green-100 text-green-700",
-                  order.status === 'تحویل داده شده' && "bg-blue-100 text-blue-700"
-                )}>
+                <span
+                  className={cn(
+                    'px-3 py-1 rounded-full text-xs',
+                    order.status === 'در انتظار' && 'bg-yellow-100 text-yellow-700',
+                    order.status === 'تایید شده' && 'bg-green-100 text-green-700',
+                    order.status === 'تحویل داده شده' && 'bg-blue-100 text-blue-700'
+                  )}
+                >
                   {order.status}
                 </span>
               </td>
               <td className="p-4">
-                <Button size="sm" variant="outline" onClick={() => onView(order)}>مشاهده</Button>
+                <Button size="sm" variant="outline" onClick={() => onView(order)}>
+                  مشاهده
+                </Button>
               </td>
             </tr>
           ))}

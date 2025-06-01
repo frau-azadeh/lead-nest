@@ -11,9 +11,5 @@ export default function LogoutButton() {
     dispatch(logoutUser());
   };
 
-  return (
-    <Button onClick={handleLogout}>
-      خروج
-    </Button>
-  );
+  return <Button onClick={handleLogout}>خروج</Button>;
 }

@@ -28,7 +28,9 @@ export const fetchUserProfile = createAsyncThunk<UserProfile, void, { rejectValu
   'auth/fetchUserProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return rejectWithValue('کاربری پیدا نشد');
 
       const { data, error } = await supabase

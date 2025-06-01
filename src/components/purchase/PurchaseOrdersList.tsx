@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchPurchaseOrders, updatePurchaseOrderStatus } from '../../features/purchase/purchaseSlice';
+import {
+  fetchPurchaseOrders,
+  updatePurchaseOrderStatus,
+} from '../../features/purchase/purchaseSlice';
 import { PurchaseOrder } from '../../types/purchaseOrder';
 import PurchaseTable from './PurchaseTable';
 import AddPurchaseOrderModal from './AddPurchaseOrderModal';
@@ -23,7 +26,7 @@ export default function PurchaseOrdersList() {
     dispatch(fetchPurchaseOrders());
   }, [dispatch]);
 
-  const filteredOrders = orders.filter(order =>
+  const filteredOrders = orders.filter((order) =>
     order.product.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -36,7 +39,9 @@ export default function PurchaseOrdersList() {
   const handleSaveStatus = async () => {
     if (!selectedOrder) return;
     try {
-      await dispatch(updatePurchaseOrderStatus({ id: selectedOrder.id, status: newStatus })).unwrap();
+      await dispatch(
+        updatePurchaseOrderStatus({ id: selectedOrder.id, status: newStatus })
+      ).unwrap();
       toast.success('وضعیت با موفقیت بروزرسانی شد!');
       setIsModalOpen(false);
     } catch {

@@ -27,18 +27,19 @@ export default function SalesDashboard() {
 
   const handleAddProduct = async (lead: Lead, productName: string, productQuantity: number) => {
     try {
-      await dispatch(createInvoice({
-        lead_id: lead.id,
-        type: 'invoice',
-        amount: productQuantity,
-        product_name: productName, // 👈 اضافه شد
-      })).unwrap();
+      await dispatch(
+        createInvoice({
+          lead_id: lead.id,
+          type: 'invoice',
+          amount: productQuantity,
+          product_name: productName, // 👈 اضافه شد
+        })
+      ).unwrap();
       toast.success('محصول به فاکتور اضافه شد');
     } catch {
       toast.error('خطا در افزودن محصول');
     }
   };
-  
 
   const handleEdit = (lead: Lead) => {
     dispatch(setEditingLead(lead));

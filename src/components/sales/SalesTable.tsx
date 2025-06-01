@@ -30,25 +30,28 @@ export default function SalesTable({
   const [isProductModalOpen, setProductModalOpen] = useState(false);
 
   const handleDeleteConfirm = (lead: Lead) => {
-    toast((t) => (
-      <div className="p-4">
-        <p>آیا از حذف "{lead.full_name}" مطمئن هستید؟</p>
-        <div className="flex justify-end gap-2 mt-2">
-          <Button variant="secondary" onClick={() => toast.dismiss(t.id)}>
-            انصراف
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              onDelete(lead);
-              toast.dismiss(t.id);
-            }}
-          >
-            بله، حذف کن
-          </Button>
+    toast(
+      (t) => (
+        <div className="p-4">
+          <p>آیا از حذف "{lead.full_name}" مطمئن هستید؟</p>
+          <div className="flex justify-end gap-2 mt-2">
+            <Button variant="secondary" onClick={() => toast.dismiss(t.id)}>
+              انصراف
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                onDelete(lead);
+                toast.dismiss(t.id);
+              }}
+            >
+              بله، حذف کن
+            </Button>
+          </div>
         </div>
-      </div>
-    ), { duration: Infinity });
+      ),
+      { duration: Infinity }
+    );
   };
 
   const openProductModal = (lead: Lead) => {
@@ -80,7 +83,9 @@ export default function SalesTable({
         <tbody>
           {leads.length === 0 ? (
             <tr>
-              <td colSpan={8} className="text-center py-4">داده‌ای یافت نشد</td>
+              <td colSpan={8} className="text-center py-4">
+                داده‌ای یافت نشد
+              </td>
             </tr>
           ) : (
             leads.map((lead) => (
@@ -99,23 +104,34 @@ export default function SalesTable({
                       {lead.product_name} - {lead.product_quantity} عدد
                     </div>
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => openProductModal(lead)}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => openProductModal(lead)}>
                       افزودن محصول
                     </Button>
                   )}
                 </td>
                 <td className="px-4 py-2 flex gap-1 justify-center">
-                  <Button size="sm" variant="outline" onClick={() => onInvoice(lead)} title="فاکتور">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onInvoice(lead)}
+                    title="فاکتور"
+                  >
                     <FileText size={16} />
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => onPreInvoice(lead)} title="پیش‌فاکتور">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onPreInvoice(lead)}
+                    title="پیش‌فاکتور"
+                  >
                     <FilePlus2 size={16} />
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => onDelivery(lead)} title="حواله">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onDelivery(lead)}
+                    title="حواله"
+                  >
                     <Truck size={16} />
                   </Button>
                 </td>

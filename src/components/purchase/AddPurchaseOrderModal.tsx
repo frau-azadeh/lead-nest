@@ -27,7 +27,12 @@ interface AddPurchaseOrderModalProps {
 export default function AddPurchaseOrderModal({ isOpen, onClose }: AddPurchaseOrderModalProps) {
   const dispatch = useAppDispatch();
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AddOrderFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<AddOrderFormValues>({
     resolver: zodResolver(addOrderSchema),
   });
 
@@ -47,11 +52,7 @@ export default function AddPurchaseOrderModal({ isOpen, onClose }: AddPurchaseOr
       <h2 className="text-xl font-bold mb-6">ثبت سفارش جدید</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="نام محصول"
-          {...register('product')}
-          error={errors.product?.message}
-        />
+        <Input label="نام محصول" {...register('product')} error={errors.product?.message} />
 
         <Input
           label="تعداد"

@@ -37,24 +37,14 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ open, lead, onSave, onCan
           value={formData.full_name}
           onChange={handleChange}
         />
-        <Input
-          label="ایمیل"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
+        <Input label="ایمیل" name="email" value={formData.email} onChange={handleChange} />
         <Input
           label="شماره تماس"
           name="phone_number"
           value={formData.phone_number}
           onChange={handleChange}
         />
-        <Input
-          label="شرکت"
-          name="company"
-          value={formData.company}
-          onChange={handleChange}
-        />
+        <Input label="شرکت" name="company" value={formData.company} onChange={handleChange} />
         <select
           name="status"
           value={formData.status}
@@ -67,7 +57,9 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ open, lead, onSave, onCan
         </select>
       </DialogContent>
       <DialogFooter>
-        <Button variant="secondary" onClick={onCancel}>انصراف</Button>
+        <Button variant="secondary" onClick={onCancel}>
+          انصراف
+        </Button>
         <Button onClick={handleSubmit}>ذخیره</Button>
       </DialogFooter>
     </Dialog>

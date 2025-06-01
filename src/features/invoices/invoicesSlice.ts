@@ -33,20 +33,21 @@ export const createInvoice = createAsyncThunk<Invoice, InsertInvoice, { rejectVa
 );
 
 // src/features/invoices/invoicesSlice.ts
-export const updateInvoice = createAsyncThunk<Invoice, Partial<Invoice> & { id: string }, { rejectValue: string }>(
-  'invoices/updateInvoice',
-  async (invoiceData, { rejectWithValue }) => {
-    const { id, ...fieldsToUpdate } = invoiceData;
-    const { data, error } = await supabase
-      .from('invoices')
-      .update(fieldsToUpdate)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) return rejectWithValue(error.message);
-    return data as Invoice;
-  }
-);
+export const updateInvoice = createAsyncThunk<
+  Invoice,
+  Partial<Invoice> & { id: string },
+  { rejectValue: string }
+>('invoices/updateInvoice', async (invoiceData, { rejectWithValue }) => {
+  const { id, ...fieldsToUpdate } = invoiceData;
+  const { data, error } = await supabase
+    .from('invoices')
+    .update(fieldsToUpdate)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) return rejectWithValue(error.message);
+  return data as Invoice;
+});
 
 const invoicesSlice = createSlice({
   name: 'invoices',

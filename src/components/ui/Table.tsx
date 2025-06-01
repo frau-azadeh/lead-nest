@@ -39,19 +39,11 @@ export default function Table<T extends Lead>({
                 <td>{lead.phone_number}</td>
                 <td>{lead.company}</td>
                 <td>{renderStatus ? renderStatus(lead) : lead.status}</td>
-                <td className='space-x-2'>
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onEdit(lead)}
-                    >
+                <td className="space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => onEdit(lead)}>
                     <Edit size={16} />
                   </Button>
-                  <Button 
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onDelete(lead)}
-                    >
+                  <Button variant="destructive" size="sm" onClick={() => onDelete(lead)}>
                     <Trash2 size={16} />
                   </Button>
                 </td>

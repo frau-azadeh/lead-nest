@@ -9,9 +9,7 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white shadow-md py-4 px-6 flex justify-between items-center">
       {/* سمت چپ: لوگو */}
-      <div className="text-2xl font-bold text-blue-600">
-        LeadNest CRM
-      </div>
+      <div className="text-2xl font-bold text-blue-600">LeadNest CRM</div>
 
       {/* سمت راست: نام کاربر و خروج */}
       <div className="flex items-center gap-4">

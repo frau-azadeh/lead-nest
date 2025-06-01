@@ -17,10 +17,7 @@ export const getLeads = async (): Promise<Lead[]> => {
 };
 
 export const addLead = async (lead: Omit<Lead, 'id' | 'created_at'>): Promise<Lead[]> => {
-  const { data, error } = await supabase
-    .from('leads')
-    .insert([lead])
-    .select();
+  const { data, error } = await supabase.from('leads').insert([lead]).select();
 
   if (error) {
     throw new Error(error.message);

@@ -10,7 +10,12 @@ interface LeadFiltersProps {
   setStatusFilter: (value: string) => void;
 }
 
-export default function LeadFilters({ searchTerm, setSearchTerm, statusFilter, setStatusFilter }: LeadFiltersProps) {
+export default function LeadFilters({
+  searchTerm,
+  setSearchTerm,
+  statusFilter,
+  setStatusFilter,
+}: LeadFiltersProps) {
   return (
     <div className="flex flex-wrap gap-4 justify-end mb-6">
       <Input

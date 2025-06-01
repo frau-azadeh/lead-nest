@@ -29,10 +29,7 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
 
   const fetchInvoices = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('invoices')
-      .select('*')
-      .eq('lead_id', lead!.id);
+    const { data, error } = await supabase.from('invoices').select('*').eq('lead_id', lead!.id);
     if (error) {
       toast.error('خطا در دریافت محصولات');
     } else {
@@ -114,9 +111,7 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <h2 className="text-lg font-bold mb-4">
-        مدیریت محصولات برای {lead?.full_name}
-      </h2>
+      <h2 className="text-lg font-bold mb-4">مدیریت محصولات برای {lead?.full_name}</h2>
 
       <div className="mb-4">
         <h3 className="font-semibold mb-2">محصولات قبلی</h3>
@@ -128,8 +123,12 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
           <ul className="list-disc ml-4 space-y-1">
             {invoices.map((inv) => (
               <li key={inv.id} className="flex items-center justify-between">
-                <span>{inv.product_name} - {inv.amount} عدد</span>
-                <Button size="sm" onClick={() => handleEditClick(inv)}>ویرایش</Button>
+                <span>
+                  {inv.product_name} - {inv.amount} عدد
+                </span>
+                <Button size="sm" onClick={() => handleEditClick(inv)}>
+                  ویرایش
+                </Button>
               </li>
             ))}
           </ul>
@@ -158,9 +157,7 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
               لغو ویرایش
             </Button>
           )}
-          <Button type="submit">
-            {editingInvoice ? 'ذخیره ویرایش' : 'افزودن محصول'}
-          </Button>
+          <Button type="submit">{editingInvoice ? 'ذخیره ویرایش' : 'افزودن محصول'}</Button>
         </div>
       </form>
     </Modal>
