@@ -15,9 +15,7 @@ export const getLeads = async () => {
 };
 
 export const addLead = async (lead: Omit<Lead, 'id' | 'created_at'>) => {
-  const { data, error } = await supabase
-    .from('leads')
-    .insert([lead]);
+  const { data, error } = await supabase.from('leads').insert([lead]);
 
   if (error) throw new Error(error.message);
 

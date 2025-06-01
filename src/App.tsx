@@ -65,11 +65,14 @@ function InnerApp() {
           </Route>
 
           {/* Unauthorized Page */}
-          <Route path="/unauthorized" element={
-            <div className="text-center py-10 text-red-500">
-              شما اجازه دسترسی به این صفحه را ندارید.
-            </div>
-          } />
+          <Route
+            path="/unauthorized"
+            element={
+              <div className="text-center py-10 text-red-500">
+                شما اجازه دسترسی به این صفحه را ندارید.
+              </div>
+            }
+          />
         </Routes>
       </main>
     </>

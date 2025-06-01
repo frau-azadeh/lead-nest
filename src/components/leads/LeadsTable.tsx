@@ -27,30 +27,34 @@ export default function LeadsTable({ leads, onEdit, onDelete }: LeadsTableProps)
       <tbody>
         {leads.length === 0 ? (
           <tr>
-            <td colSpan={6} className="text-center p-4">هیچ داده‌ای یافت نشد.</td>
-          </tr>
-        ) : leads.map((lead) => (
-          <tr key={lead.id}>
-            <td>{lead.full_name}</td>
-            <td>{lead.email}</td>
-            <td>{lead.phone_number}</td>
-            <td>{lead.company}</td>
-            <td>
-              <div className="flex items-center gap-2">
-                <StatusBadge status={lead.status} />
-                <LeadStatusChanger lead={lead} />
-              </div>
-            </td>
-            <td className="flex gap-2">
-              <Button onClick={() => onEdit(lead)}>
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button variant="destructive" onClick={() => onDelete(lead)}>
-                <Trash2 className="w-4 h-4" />
-              </Button>
+            <td colSpan={6} className="text-center p-4">
+              هیچ داده‌ای یافت نشد.
             </td>
           </tr>
-        ))}
+        ) : (
+          leads.map((lead) => (
+            <tr key={lead.id}>
+              <td>{lead.full_name}</td>
+              <td>{lead.email}</td>
+              <td>{lead.phone_number}</td>
+              <td>{lead.company}</td>
+              <td>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={lead.status} />
+                  <LeadStatusChanger lead={lead} />
+                </div>
+              </td>
+              <td className="flex gap-2">
+                <Button onClick={() => onEdit(lead)}>
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button variant="destructive" onClick={() => onDelete(lead)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );

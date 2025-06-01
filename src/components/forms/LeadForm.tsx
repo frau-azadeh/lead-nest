@@ -24,7 +24,13 @@ export default function LeadForm() {
   const { editingLead } = useAppSelector((state) => state.leads);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<LeadFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema) as unknown as Resolver<LeadFormData>,
   });
 
@@ -41,7 +47,11 @@ export default function LeadForm() {
 
   const onSubmit = async (data: LeadFormData) => {
     try {
-      const cleanedData = { ...data, phone_number: data.phone_number ?? '', company: data.company ?? '' };
+      const cleanedData = {
+        ...data,
+        phone_number: data.phone_number ?? '',
+        company: data.company ?? '',
+      };
 
       if (editingLead) {
         const updatedLead: Omit<Lead, 'created_at'> = { ...editingLead, ...cleanedData };
@@ -86,7 +96,11 @@ export default function LeadForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input label="Full Name" {...register('full_name')} error={errors.full_name?.message} />
           <Input label="Email" {...register('email')} error={errors.email?.message} />
-          <Input label="Phone Number" {...register('phone_number')} error={errors.phone_number?.message} />
+          <Input
+            label="Phone Number"
+            {...register('phone_number')}
+            error={errors.phone_number?.message}
+          />
           <Input label="Company" {...register('company')} error={errors.company?.message} />
 
           <div className="flex justify-end">

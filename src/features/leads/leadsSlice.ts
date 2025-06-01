@@ -26,14 +26,15 @@ export const fetchLeads = createAsyncThunk<Lead[], void, { rejectValue: string }
   }
 );
 
-export const createLead = createAsyncThunk<Lead, Omit<Lead, 'id' | 'created_at'>, { rejectValue: string }>(
-  'leads/createLead',
-  async (newLead, { rejectWithValue }) => {
-    const { data, error } = await supabase.from('leads').insert([newLead]).select().single();
-    if (error) return rejectWithValue(error.message);
-    return data as Lead;
-  }
-);
+export const createLead = createAsyncThunk<
+  Lead,
+  Omit<Lead, 'id' | 'created_at'>,
+  { rejectValue: string }
+>('leads/createLead', async (newLead, { rejectWithValue }) => {
+  const { data, error } = await supabase.from('leads').insert([newLead]).select().single();
+  if (error) return rejectWithValue(error.message);
+  return data as Lead;
+});
 
 export const updateLead = createAsyncThunk<Lead, Omit<Lead, 'created_at'>, { rejectValue: string }>(
   'leads/updateLead',
@@ -48,7 +49,6 @@ export const updateLead = createAsyncThunk<Lead, Omit<Lead, 'created_at'>, { rej
         phone_number: lead.phone_number,
         company: lead.company,
         status: lead.status,
-        
       })
       .eq('id', lead.id)
       .select('*')
@@ -62,8 +62,6 @@ export const updateLead = createAsyncThunk<Lead, Omit<Lead, 'created_at'>, { rej
   }
 );
 
-
-
 export const deleteLead = createAsyncThunk<string, string, { rejectValue: string }>(
   'leads/deleteLead',
   async (id, { rejectWithValue }) => {
@@ -73,15 +71,15 @@ export const deleteLead = createAsyncThunk<string, string, { rejectValue: string
   }
 );
 
-export const updateLeadStatus = createAsyncThunk<{ id: string; status: string }, { id: string; status: string }, { rejectValue: string }>(
-  'leads/updateLeadStatus',
-  async ({ id, status }, { rejectWithValue }) => {
-    const { error } = await supabase.from('leads').update({ status }).eq('id', id);
-    if (error) return rejectWithValue(error.message);
-    return { id, status };
-  }
-);
-
+export const updateLeadStatus = createAsyncThunk<
+  { id: string; status: string },
+  { id: string; status: string },
+  { rejectValue: string }
+>('leads/updateLeadStatus', async ({ id, status }, { rejectWithValue }) => {
+  const { error } = await supabase.from('leads').update({ status }).eq('id', id);
+  if (error) return rejectWithValue(error.message);
+  return { id, status };
+});
 
 const leadsSlice = createSlice({
   name: 'leads',
@@ -124,7 +122,6 @@ const leadsSlice = createSlice({
           lead.status = action.payload.status;
         }
       });
-      
   },
 });
 

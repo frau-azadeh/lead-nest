@@ -32,14 +32,14 @@ export const deleteSale = createAsyncThunk<string, string>(
   }
 );
 
-export const updateStatus = createAsyncThunk<{ id: string; status: string }, { id: string; status: string }>(
-  'sales/updateStatus',
-  async ({ id, status }, { rejectWithValue }) => {
-    const { error } = await supabase.from('leads').update({ status }).eq('id', id);
-    if (error) return rejectWithValue(error.message);
-    return { id, status };
-  }
-);
+export const updateStatus = createAsyncThunk<
+  { id: string; status: string },
+  { id: string; status: string }
+>('sales/updateStatus', async ({ id, status }, { rejectWithValue }) => {
+  const { error } = await supabase.from('leads').update({ status }).eq('id', id);
+  if (error) return rejectWithValue(error.message);
+  return { id, status };
+});
 
 const salesSlice = createSlice({
   name: 'sales',

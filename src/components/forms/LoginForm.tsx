@@ -21,7 +21,11 @@ export default function LoginForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
@@ -65,12 +69,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
-      <Input
-        label="ایمیل"
-        type="email"
-        {...register('email')}
-        error={errors.email?.message}
-      />
+      <Input label="ایمیل" type="email" {...register('email')} error={errors.email?.message} />
       <Input
         label="رمز عبور"
         type="password"
