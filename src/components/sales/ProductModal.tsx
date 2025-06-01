@@ -9,7 +9,7 @@ interface ProductModalProps {
   lead: Lead | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void; // وقتی محصول جدید یا ویرایش ذخیره شد
+  onSave: (productName: string, productQuantity: number) => void; // ✅ اصلاح شده
 }
 
 export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductModalProps) {
@@ -80,11 +80,11 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
         toast('ویرایش انجام شد ولی داده‌ای برنگشت');
       } else {
         toast.success('محصول ویرایش شد');
+        onSave(productName, productQuantity); // ✅ فراخوانی صحیح
       }
 
       await fetchInvoices();
       clearForm();
-      onSave();
     } else {
       // INSERT
       const { data, error } = await supabase
@@ -104,11 +104,11 @@ export default function ProductModal({ lead, isOpen, onClose, onSave }: ProductM
         toast('افزودن انجام شد ولی داده‌ای برنگشت');
       } else {
         toast.success('محصول اضافه شد');
+        onSave(productName, productQuantity); // ✅ فراخوانی صحیح
       }
 
       await fetchInvoices();
       clearForm();
-      onSave();
     }
   };
 
